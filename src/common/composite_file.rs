@@ -4,6 +4,9 @@ use common::VInt;
 use directory::ReadOnlySource;
 use directory::WritePtr;
 use schema::Field;
+use space_usage::PerFieldWeight;
+use space_usage::ByteCount;
+use space_usage::FieldWeight;
 use std::collections::HashMap;
 use std::io::Write;
 use std::io::{self, Read};
@@ -165,6 +168,33 @@ impl CompositeFile {
         self.offsets_index
             .get(&FileAddr { field, idx })
             .map(|&(from, to)| self.data.slice(from, to))
+    }
+
+    pub fn fields(&self) -> impl Iterator<Item = &FileAddr> {
+        self.offsets_index.keys()
+    }
+
+    pub fn len(&self) -> usize {
+        self.data.len()
+    }
+
+    pub fn field_len(&self, field: Field, idx: usize) -> Option<usize> {
+        self.offsets_index
+            .get(&FileAddr { field, idx })
+            .map(|&(from, to)| to - from)
+    }
+
+    pub fn space_usage(&self) -> PerFieldWeight {
+        let mut fields = HashMap::new();
+        let mut total = ByteCount(0);
+        for (&field_addr, &(start, end)) in self.offsets_index.iter() {
+            let size = ByteCount(end - start);
+            fields.entry(field_addr.field)
+                .or_insert_with(|| FieldWeight::empty(field_addr.field))
+                .add_field_idx(field_addr.idx, size);
+            total += size;
+        }
+        PerFieldWeight::new(fields, total)
     }
 }
 

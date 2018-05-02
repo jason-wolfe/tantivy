@@ -17,6 +17,8 @@ use schema::Document;
 use schema::Field;
 use schema::FieldType;
 use schema::Schema;
+use space_usage::SegmentWeight;
+use space_usage::ByteCount;
 use std::collections::HashMap;
 use std::fmt;
 use std::sync::Arc;
@@ -327,6 +329,19 @@ impl SegmentReader {
         self.delete_bitset()
             .map(|delete_set| delete_set.is_deleted(doc))
             .unwrap_or(false)
+    }
+
+    pub fn space_usage(&self) -> SegmentWeight {
+        SegmentWeight {
+            num_docs: self.num_docs(),
+            termdict: self.termdict_composite.space_usage(),
+            postings: self.postings_composite.space_usage(),
+            positions: self.positions_composite.space_usage(),
+            fast_fields: self.fast_fields_composite.space_usage(),
+            fieldnorms: self.fieldnorms_composite.space_usage(),
+            store: self.store_reader.space_usage(),
+            deletes: self.delete_bitset_opt.as_ref().map(|x| x.space_usage()).unwrap_or(ByteCount(0)),
+        }
     }
 }
 
