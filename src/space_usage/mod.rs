@@ -3,6 +3,10 @@ Representations for the space usage of various parts of a Tantivy index.
 
 This can be used programatically, and will also be exposed in a human readable fashion in
 tantivy-cli.
+
+One important caveat for all of this functionality is that none of it currently takes storage-level
+details into consideration. For example, if your file system block size is 4096 bytes, we can
+under-count actual resultant space usage by up to 4095 bytes per file.
 */
 
 use schema::Field;
