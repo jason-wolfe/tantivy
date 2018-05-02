@@ -86,8 +86,13 @@ impl Searcher {
         FieldSearcher::new(inv_index_readers)
     }
 
+    /// Summarize total space usage of this searcher.
     pub fn space_usage(&self) -> SearcherSpaceUsage {
-        SearcherSpaceUsage::new(self.segment_readers.iter().map(|x| x.space_usage()).collect::<Vec<_>>())
+        let mut space_usage = SearcherSpaceUsage::new();
+        for segment_reader in self.segment_readers.iter() {
+            space_usage.add_segment(segment_reader.space_usage());
+        }
+        space_usage
     }
 }
 

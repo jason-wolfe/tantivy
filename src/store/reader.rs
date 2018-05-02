@@ -92,6 +92,7 @@ impl StoreReader {
         Ok(Document::deserialize(&mut cursor)?)
     }
 
+    /// Summarize total space usage of this store reader.
     pub fn space_usage(&self) -> StoreSpaceUsage {
         StoreSpaceUsage::new(ByteCount(self.data.len()), ByteCount(self.offset_index_source.len()))
     }

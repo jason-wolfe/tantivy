@@ -170,31 +170,14 @@ impl CompositeFile {
             .map(|&(from, to)| self.data.slice(from, to))
     }
 
-    pub fn fields(&self) -> impl Iterator<Item = &FileAddr> {
-        self.offsets_index.keys()
-    }
-
-    pub fn len(&self) -> usize {
-        self.data.len()
-    }
-
-    pub fn field_len(&self, field: Field, idx: usize) -> Option<usize> {
-        self.offsets_index
-            .get(&FileAddr { field, idx })
-            .map(|&(from, to)| to - from)
-    }
-
     pub fn space_usage(&self) -> PerFieldSpaceUsage {
         let mut fields = HashMap::new();
-        let mut total = ByteCount(0);
         for (&field_addr, &(start, end)) in self.offsets_index.iter() {
-            let size = ByteCount(end - start);
             fields.entry(field_addr.field)
                 .or_insert_with(|| FieldUsage::empty(field_addr.field))
-                .add_field_idx(field_addr.idx, size);
-            total += size;
+                .add_field_idx(field_addr.idx, ByteCount(end - start));
         }
-        PerFieldSpaceUsage::new(fields, total)
+        PerFieldSpaceUsage::new(fields)
     }
 }
 
