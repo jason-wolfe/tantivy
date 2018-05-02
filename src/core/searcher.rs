@@ -5,7 +5,7 @@ use query::Query;
 use schema::Document;
 use schema::Schema;
 use schema::{Field, Term};
-use space_usage::SearcherWeight;
+use space_usage::SearcherSpaceUsage;
 use std::fmt;
 use std::sync::Arc;
 use termdict::TermMerger;
@@ -86,8 +86,8 @@ impl Searcher {
         FieldSearcher::new(inv_index_readers)
     }
 
-    pub fn space_usage(&self) -> SearcherWeight {
-        SearcherWeight::new(self.segment_readers.iter().map(|x| x.space_usage()).collect::<Vec<_>>())
+    pub fn space_usage(&self) -> SearcherSpaceUsage {
+        SearcherSpaceUsage::new(self.segment_readers.iter().map(|x| x.space_usage()).collect::<Vec<_>>())
     }
 }
 

@@ -17,7 +17,7 @@ use schema::Document;
 use schema::Field;
 use schema::FieldType;
 use schema::Schema;
-use space_usage::SegmentWeight;
+use space_usage::SegmentSpaceUsage;
 use space_usage::ByteCount;
 use std::collections::HashMap;
 use std::fmt;
@@ -331,8 +331,8 @@ impl SegmentReader {
             .unwrap_or(false)
     }
 
-    pub fn space_usage(&self) -> SegmentWeight {
-        SegmentWeight {
+    pub fn space_usage(&self) -> SegmentSpaceUsage {
+        SegmentSpaceUsage {
             num_docs: self.num_docs(),
             termdict: self.termdict_composite.space_usage(),
             postings: self.postings_composite.space_usage(),

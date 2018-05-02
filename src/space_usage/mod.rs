@@ -18,53 +18,53 @@ impl AddAssign for ByteCount {
     }
 }
 
-pub struct SearcherWeight {
-    segments: Vec<SegmentWeight>,
+pub struct SearcherSpaceUsage {
+    segments: Vec<SegmentSpaceUsage>,
 }
 
-impl SearcherWeight {
-    pub fn new(segments: Vec<SegmentWeight>) -> SearcherWeight {
-        SearcherWeight { segments }
+impl SearcherSpaceUsage {
+    pub fn new(segments: Vec<SegmentSpaceUsage>) -> SearcherSpaceUsage {
+        SearcherSpaceUsage { segments }
     }
 }
 
-pub struct SegmentWeight {
+pub struct SegmentSpaceUsage {
     pub(crate) num_docs: u32,
 
-    pub(crate) termdict: PerFieldWeight,
-    pub(crate) postings: PerFieldWeight,
-    pub(crate) positions: PerFieldWeight,
-    pub(crate) fast_fields: PerFieldWeight,
-    pub(crate) fieldnorms: PerFieldWeight,
+    pub(crate) termdict: PerFieldSpaceUsage,
+    pub(crate) postings: PerFieldSpaceUsage,
+    pub(crate) positions: PerFieldSpaceUsage,
+    pub(crate) fast_fields: PerFieldSpaceUsage,
+    pub(crate) fieldnorms: PerFieldSpaceUsage,
 
-    pub(crate) store: StoreWeight,
+    pub(crate) store: StoreSpaceUsage,
 
     pub(crate) deletes: ByteCount,
 }
 
-pub struct StoreWeight {
+pub struct StoreSpaceUsage {
     data: ByteCount,
     offsets: ByteCount,
 }
 
-impl StoreWeight {
-    pub fn new(data: ByteCount, offsets: ByteCount) -> StoreWeight {
-        StoreWeight { data, offsets }
+impl StoreSpaceUsage {
+    pub fn new(data: ByteCount, offsets: ByteCount) -> StoreSpaceUsage {
+        StoreSpaceUsage { data, offsets }
     }
 }
 
-pub struct PerFieldWeight {
-    fields: HashMap<Field, FieldWeight>,
+pub struct PerFieldSpaceUsage {
+    fields: HashMap<Field, FieldUsage>,
     total: ByteCount
 }
 
-impl PerFieldWeight {
-    pub fn new(fields: HashMap<Field, FieldWeight>, total: ByteCount) -> PerFieldWeight {
-        PerFieldWeight { fields, total }
+impl PerFieldSpaceUsage {
+    pub fn new(fields: HashMap<Field, FieldUsage>, total: ByteCount) -> PerFieldSpaceUsage {
+        PerFieldSpaceUsage { fields, total }
     }
 }
 
-pub struct FieldWeight {
+pub struct FieldUsage {
     field: Field,
     weight: ByteCount,
     /// A field can be composed of more than one piece.
@@ -73,9 +73,9 @@ pub struct FieldWeight {
     sub_weights: Vec<Option<ByteCount>>,
 }
 
-impl FieldWeight {
-    pub fn empty(field: Field) -> FieldWeight {
-        FieldWeight {
+impl FieldUsage {
+    pub fn empty(field: Field) -> FieldUsage {
+        FieldUsage {
             field,
             weight: ByteCount(0),
             sub_weights: Vec::new(),

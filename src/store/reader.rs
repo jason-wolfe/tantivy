@@ -6,7 +6,7 @@ use datastruct::SkipList;
 use directory::ReadOnlySource;
 use lz4;
 use schema::Document;
-use space_usage::StoreWeight;
+use space_usage::StoreSpaceUsage;
 use space_usage::ByteCount;
 use std::cell::RefCell;
 use std::io::{self, Read};
@@ -92,8 +92,8 @@ impl StoreReader {
         Ok(Document::deserialize(&mut cursor)?)
     }
 
-    pub fn space_usage(&self) -> StoreWeight {
-        StoreWeight::new(ByteCount(self.data.len()), ByteCount(self.offset_index_source.len()))
+    pub fn space_usage(&self) -> StoreSpaceUsage {
+        StoreSpaceUsage::new(ByteCount(self.data.len()), ByteCount(self.offset_index_source.len()))
     }
 }
 
